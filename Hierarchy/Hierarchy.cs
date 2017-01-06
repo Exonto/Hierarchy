@@ -25,16 +25,6 @@ namespace HierarchyCollection
 			this._rootNode = new Node<E>(rootObj);
 		}
 
-		//public void setRootNode()
-
-		private void migrateChildren(Node<E> original, Node<E> other)
-		{
-			foreach (Node<E> node in original._children)
-			{
-				
-			}
-		}
-
 		/// <summary>
 		/// Returns a mutable list of child elements.
 		/// </summary>
