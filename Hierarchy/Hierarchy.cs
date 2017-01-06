@@ -26,7 +26,8 @@ namespace HierarchyCollection
 		}
 
 		/// <summary>
-		/// Returns a mutable list of child elements.
+		/// Returns a mutable list of the child <b>elements</b> of the given
+		/// parent.
 		/// </summary>
 		/// <returns>The children.</returns>
 		/// <param name="parent">Parent.</param>
@@ -39,6 +40,31 @@ namespace HierarchyCollection
 			} else {
 				return null;
 			}
+		}
+
+		public List<Node<E>> GetChildNodes(E parent)
+		{
+			Node<E> parentNode = this.GetNode(parent, this._rootNode);
+
+			if (parentNode != null)
+			{
+				return parentNode.ChildNodes;
+			}
+			else {
+				return null;
+			}
+		}
+
+		/// <summary>
+		/// Returns a node which is located based upon matching elements.
+		/// This will start at the root node and search from that point.
+		/// </summary>
+		/// <returns>The child node.</returns>
+		/// <param name="element">Element.</param>
+		public Node<E> GetNode(E element)
+		{
+			// Begins searching at the root node
+			return this.GetNode(element, this._rootNode);
 		}
 
 		/// <summary>
@@ -56,17 +82,17 @@ namespace HierarchyCollection
               // If the start node contains the element being looked for
 			} else if (startNode.IsLeaf() == false) {
 
-				// If none of this node's children contain the element,
-				// then this will recursively search through the 
-				// children's children.
-				foreach (Node<E> child in startNode._children)
+				// If this node does not itself contain the element 
+				// being searched for, then it will instead recursively
+				// search through its own children.
+				foreach (Node<E> child in startNode.ChildNodes)
 				{
 					Node<E> foundNode = this.GetNode(element, child);
 					if (foundNode != null) return foundNode;
 				}
 			}
 
-			// Indicates that no node was found
+			// No node was found
 			return null;
 		}
 
@@ -100,17 +126,19 @@ namespace HierarchyCollection
 		{
 			/// <summary>
 			/// Defines the parent node which is storing this node as a "child".
+			/// This field should not be accessible from outside the containing 
+			/// class.
 			/// </summary>
 			private Node<E> _parent;
 
 			private E _element;
 
 			// Only accessible by the outer class
-			public List<Node<E>> _children = new List<Node<E>>();
+			private List<Node<E>> _children = new List<Node<E>>();
 
 			// Keeps a cached record of the elements contained within this node's
-			// child nodes. This is done so that acquiring these elements is 
-			// quick process
+			// child nodes. This is done so that acquiring these elements from
+			// their respective nodes is an quick process
 			private List<E> cachedChildElements = new List<E>();
 
 			public Node(E element)
@@ -139,6 +167,14 @@ namespace HierarchyCollection
 				childNode._parent = this;
 
 				return childNode;
+			}
+
+			public void AddChildren(params E[] elements)
+			{
+				foreach (E element in elements)
+				{
+					this.AddChild(element);
+				}
 			}
 
 			/// <summary>
@@ -188,6 +224,9 @@ namespace HierarchyCollection
 				return null;
 			}
 
+// -----------------------------------------------------------------------------
+// Node Properties
+// -----------------------------------------------------------------------------
 
 			/// <summary>
 			/// Gets or sets the element.
@@ -208,6 +247,19 @@ namespace HierarchyCollection
 					// through each child node
 					return cachedChildElements;
 				}
+			}
+
+			public List<Node<E>> ChildNodes
+			{
+				get 
+				{
+					return this._children;
+				}
+			}
+
+			public Node<E> Parent
+			{
+				get { return this._parent; }
 			}
 		}
 	}
